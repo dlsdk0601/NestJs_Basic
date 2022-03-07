@@ -6,8 +6,8 @@
 
 <br />
 
-app : 앱 구동
-AppModule : 모든 것의 root 모듈
-AppController : handles routing
-AppService : stores controllers for the routers
+app : 앱 구동 <br />
+AppModule : 모든 것의 root 모듈 <br />
+AppController : handles routing <br />
+AppService : stores controllers for the routers <br />
 
