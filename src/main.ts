@@ -8,7 +8,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
-      transform: true,
+      transform: true,   // 변수의 타입을 원하는 대로 설정 가능하게  
     })
   )
   await app.listen(3000);

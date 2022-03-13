@@ -146,3 +146,46 @@ Jest의 describe 함수는 설명문과 함께 테스트 코드들을 포함하�
 <br />
 
 위 에서는 error 코드도 잘 작동하는지 테스트 해본다. Nest에서 기본으로 제공하는 에러 코드를 사용했고, 에러 코드의 메세지의 결과가 잘 나오는지도 비교 할 수있다.
+
+
+## e2e Test
+
+<br />
+
+실제로 단위적으로 테스트 하고 싶을때, 예를 들어 함수 하나 정도의 또는 아주 작은 컴포넌트 하나 정도의 테스트를 위해서는 유닛 테스트가 적당하지만, 두가지의 함수가 서로 엮인다거나, 여러 컴포넌트가 결합하는 등의 경우에는 end To end 테스트가 더 적당하다. 
+
+<br />
+
+테스트 시작전에 beforeEach를 beforeAll로 바꾸어주었다. 바꾸기전에는 각 테스트 마다 어플리케이션을 새로 실행시키면 bofreEach가 실행되지만, beforeAll은 한번 실행되고 테스트가 끝날때까지 유지한다. 
+
+> 주의 사항
+
+테스트를 해보면서, id값으로 영화의 정보를 가져오는 API를 테스트 하는 도중 에러가 발생했다. 포스트맨으로 그리고 브라우저로 테스트 해봤을 경우 아무 문제 없었지만 e2e test에서는 오류가 난다. 왜 일까?
+
+```e2e
+  it("GET 200", () => {
+        return request(app.getHttpServer())
+        .get("/movies/1")
+        .expect(200)
+  }) // Error
+```
+
+<br />
+
+왜냐하면 main.ts에서 pipe 설정을 해주었는데, 이때 설정 값 중에서 transform을 true로 해주었다. 즉, controller에서 변수의 타입을 내가 원하는대로 transform 할 수 있게 바꿔 놓았다. 
+url에서의 id는 string이고, 이를 number로 바꾸었는데, 테스트에서도 실제 어플리케이션의 환경을 그대로 적용시켜줘야한다. 지금 서버를 켜서 돌아가는 서버와 테스트 서버는 별개이기 때문이다. 
+
+<br />
+
+main.ts
+```main.ts
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,   // 변수의 타입을 원하는 대로 설정 가능하게  
+    })
+  )
+```
+
+위와 같은 설정을 e2e test파일에도 같이 해준다.
